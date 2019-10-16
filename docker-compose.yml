@@ -1,0 +1,55 @@
+version: "3.6"
+services:
+
+  perf-test:
+    build:
+      context: ./
+    image: perf-test:${TAG:-latest}
+    environment:
+      - INTAKE_KEY=perf-test:secret
+      - INTAKE_URL=http://intake:9280/events/perf-test
+    depends_on:
+      - intake
+
+  intake:
+    image: intake:${TAG:-latest}
+    depends_on:
+    - kafka
+    - mysql
+    - zookeeper
+    environment:
+      - JAVA_OPTS=-server
+      - MAIN_CLASS=com.metamx.kafka.HttpProducerMain
+      - APP_CONFIG=/apps/conf/http-producer.properties.local
+      - com_metamx_kafka_http_test_enabled=false
+      - com_metamx_kafka_http_producer_replacement=PT999S
+    ports:
+      - 9280:9280
+      - 9282:9282
+      - 9284:9284
+
+  kafka:
+    image: intake:${TAG:-latest}
+    depends_on:
+      - zookeeper
+    environment:
+      - JAVA_OPTS=-server
+      - MAIN_CLASS=com.metamx.kafka.KafkaMain
+      - APP_CONFIG=/apps/conf/server.properties.local
+    ports:
+      - 9092:9092
+
+  zookeeper:
+    image: zookeeper
+    ports:
+      - 2181:2181
+
+  mysql:
+    image: mysql:5.6
+    environment:
+    - MYSQL_ROOT_PASSWORD=iamrandom
+    - MYSQL_USER=metamx
+    - MYSQL_PASSWORD=joshua
+    - MYSQL_DATABASE=kafka
+    ports:
+    - 3306:3306
