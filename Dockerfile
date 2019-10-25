@@ -6,7 +6,6 @@ RUN apk update \
  && apk add jq \
  && rm -rf /var/cache/apk/*
 
-COPY events.json /apps/
 COPY entrypoint.sh /apps/
 WORKDIR /apps/
 

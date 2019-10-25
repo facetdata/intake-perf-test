@@ -4,7 +4,7 @@ services:
   perf-test:
     build:
       context: ./
-    image: perf-test:${TAG:-latest}
+    image: gcr.io/prod-xpn/perf-test:${TAG:-latest}
     environment:
       - INTAKE_KEY=perf-test:secret
       - INTAKE_URL=http://intake:9280/events/perf-test
@@ -12,7 +12,7 @@ services:
       - intake
 
   intake:
-    image: intake:${TAG:-latest}
+    image: gcr.io/prod-xpn/intake:intake-facet-19.10.10
     depends_on:
     - kafka
     - mysql
@@ -29,7 +29,7 @@ services:
       - 9284:9284
 
   kafka:
-    image: intake:${TAG:-latest}
+    image: gcr.io/prod-xpn/intake:intake-facet-19.10.10
     depends_on:
       - zookeeper
     environment:
